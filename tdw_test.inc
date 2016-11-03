@@ -54,6 +54,8 @@ static stock
 #define ASSERT_GTR%0(%1,%2) _TDW_TEST_(bool:((%1) > (%2)), (#%1 > %2))
 #define ASSERT_GEQ%0(%1,%2) _TDW_TEST_(bool:((%1) >= (%2)), (#%1 >= %2))
 
+#define TEST_SKIP%0() return _TDW_TEST__SKIP()
+
 
 #if defined OnTestsComplete
 	forward OnTestsComplete(functions, tests, passed, failes);
@@ -191,6 +193,7 @@ static stock
 		count_of_tests,
 		count_of_passed,
 		count_of_failed,
+		count_of_skipped,
 		function_name[TDW_MAX_FUNCTION_NAME],
 		// ret_value,
 		time_ms;
@@ -253,9 +256,15 @@ static stock
 			// Get the returned value of the function
 			// #emit stor.s.pri ret_value
 
+			// Compute the execution time of the functions.
 			time_ms = GetTickCount() - time_ms;
 
-			if (TDW_g_sFunctionHaveAssertions)
+			if (TDW_g_sFunctionHaveAssertions & 0x80000000)
+			{
+				printf("[    SKIPPED ] %s (%d ms)", function_name, time_ms);
+				++count_of_skipped;
+			}
+			else if (TDW_g_sFunctionHaveAssertions != 0)
 			{
 				printf("[   FAILED   ] %s (%d ms)", function_name, time_ms);
 				++count_of_failed;
@@ -274,6 +283,7 @@ static stock
 	printf("\tCount of all tests: %d", count_of_tests);
 	printf("\tCount of passed:    %d", count_of_passed);
 	printf("\tCount of failed:    %d", count_of_failed);
+	printf("\tCount of skipped:   %d", count_of_skipped);
 	print(!"============== End ==============");
 
 	#if defined OnTestsComplete
@@ -281,6 +291,7 @@ static stock
 			count_of_failed
 		);
 	#endif
+
 	return 1;
 }
 
@@ -301,6 +312,7 @@ static stock
 		#emit inc.s address
 	}
 	while (chr != '\0');
+	return 0;
 }
 
 
@@ -310,7 +322,14 @@ stock
 	if (x == false)
 	{
 		printf("[   FAILED   ] %s", c_str);
-		TDW_g_sFunctionHaveAssertions += 1;
+		++TDW_g_sFunctionHaveAssertions;
 	}
 	return 0;
+}
+
+stock
+	_TDW_TEST__SKIP()
+{
+	TDW_g_sFunctionHaveAssertions = 0x80000000;
+	return 1;
 }

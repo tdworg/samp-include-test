@@ -35,6 +35,13 @@ freely, subject to the following restrictions:
 
 #include "tdw_test/detect/crashdetect"
 
+static stock
+	TDW_g_sOffsetDat,
+	TDW_g_sOffsetPublicTable,
+	TDW_g_sOffsetNativeTable,
+	TDW_g_sNumberOfPublics,
+	TDW_g_sFunctionHaveAssertions;
+
 #define TEST%0(%1) forward _wT@%1();public _wT@%1()
 
 #define ASSERT_TRUE%0(%1) _TDW_TEST_(bool:(%1),#%1)
@@ -47,6 +54,10 @@ freely, subject to the following restrictions:
 #define ASSERT_GTR%0(%1,%2) _TDW_TEST_(bool:((%1) > (%2)), (#%1 > %2))
 #define ASSERT_GEQ%0(%1,%2) _TDW_TEST_(bool:((%1) >= (%2)), (#%1 >= %2))
 
+
+#if defined OnTestsComplete
+	forward OnTestsComplete(functions, tests, passed, failes);
+#endif
 
 #if defined FILTERSCRIPT
 	#if defined TSH@OnFilterScriptInit
@@ -96,14 +107,29 @@ freely, subject to the following restrictions:
 	#define OnGameModeInit TSH@OnGameModeInit
 #endif
 
+#if _TDW_TEST_CRASHDETECT_DEFINED
+	#if defined TSH@OnRuntimeError
+		forward TSH@OnRuntimeError(code, &bool:suppress);
+	#endif
 
-static stock
-	TDW_g_sOffsetDat,
-	TDW_g_sOffsetPublicTable,
-	TDW_g_sOffsetNativeTable,
-	TDW_g_sNumberOfPublics,
-	TDW_g_sFunctionHaveAssertions;
+	public
+		OnRuntimeError(code, &bool:suppress)
+	{
+		_TDW_TEST_(false, "Runtime error");
+		#if defined TSH@OnRuntimeError
+			return TSH@OnRuntimeError(code, suppress);
+		#else
+			return 1;
+		#endif
+	}
+	#if defined _ALS_OnRuntimeError
+		#undef OnRuntimeError
+	#else
+		#define _ALS_OnRuntimeError
+	#endif
 
+	#define OnRuntimeError TSH@OnRuntimeError
+#endif
 
 
 static stock
@@ -155,7 +181,6 @@ static stock
 	print(!"\n========= Unit Test Run =========");
 
 	const
-		// TDW_g_sTag = TAG_PACK('@','T','w','_'),
 		TDW_g_sTag = ('_')|('w'<<8)|('T'<<16)|('@'<<24),
 		TDW_MAX_FUNCTION_NAME = 32;
 
@@ -167,7 +192,7 @@ static stock
 		count_of_passed,
 		count_of_failed,
 		function_name[TDW_MAX_FUNCTION_NAME],
-		ret_value,
+		// ret_value,
 		time_ms;
 
 	while (index < TDW_g_sNumberOfPublics)
@@ -251,6 +276,11 @@ static stock
 	printf("\tCount of failed:    %d", count_of_failed);
 	print(!"============== End ==============");
 
+	#if defined OnTestsComplete
+		OnTestsComplete(TDW_g_sNumberOfPublics, count_of_tests, count_of_passed,
+			count_of_failed
+		);
+	#endif
 	return 1;
 }
 
@@ -279,7 +309,7 @@ stock
 {
 	if (x == false)
 	{
-		printf("\t* Assertion failed: %s", c_str);
+		printf("[   FAILED   ] %s", c_str);
 		TDW_g_sFunctionHaveAssertions += 1;
 	}
 	return 0;

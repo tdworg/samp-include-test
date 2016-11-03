@@ -45,7 +45,7 @@ freely, subject to the following restrictions:
 		#tryinclude "../include/crashdetect.inc"
 	#endif
 
-	#if !defined sscanf
+	#if !defined CRASHDETECT_INC
 		#define _TDW_TEST_CRASHDETECT_DEFINED 0
 	#else
 		#define _TDW_TEST_CRASHDETECT_DEFINED 1

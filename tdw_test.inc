@@ -35,12 +35,20 @@ freely, subject to the following restrictions:
 
 #include "tdw_test/detect/crashdetect"
 
+enum
+	E_TDW_TEST_FUNC_ASSERTS
+{
+	TDW_TEST_FUNC_NONE,
+	TDW_TEST_FUNC_SKIPPED,
+	TDW_TEST_FUNC_FAILED
+};
+
 static stock
 	TDW_g_sOffsetDat,
 	TDW_g_sOffsetPublicTable,
 	TDW_g_sOffsetNativeTable,
 	TDW_g_sNumberOfPublics,
-	TDW_g_sFunctionHaveAssertions;
+	E_TDW_TEST_FUNC_ASSERTS:TDW_g_sFunctionHaveAssertions;
 
 #define TEST%0(%1) forward _wT@%1();public _wT@%1()
 
@@ -215,7 +223,7 @@ static stock
 			++count_of_tests;
 
 			// Reset the variable.
-			TDW_g_sFunctionHaveAssertions = 0;
+			TDW_g_sFunctionHaveAssertions = TDW_TEST_FUNC_NONE;
 
 			// Get the name without of the tag.
 			#emit load.s.pri addr
@@ -259,12 +267,12 @@ static stock
 			// Compute the execution time of the functions.
 			time_ms = GetTickCount() - time_ms;
 
-			if (TDW_g_sFunctionHaveAssertions & 0x80000000)
+			if (TDW_g_sFunctionHaveAssertions == TDW_TEST_FUNC_SKIPPED)
 			{
 				printf("[    SKIPPED ] %s (%d ms)", function_name, time_ms);
 				++count_of_skipped;
 			}
-			else if (TDW_g_sFunctionHaveAssertions != 0)
+			else if (TDW_g_sFunctionHaveAssertions == TDW_TEST_FUNC_FAILED)
 			{
 				printf("[   FAILED   ] %s (%d ms)", function_name, time_ms);
 				++count_of_failed;
@@ -322,7 +330,7 @@ stock
 	if (x == false)
 	{
 		printf("[   FAILED   ] %s", c_str);
-		++TDW_g_sFunctionHaveAssertions;
+		TDW_g_sFunctionHaveAssertions = TDW_TEST_FUNC_FAILED;
 	}
 	return 0;
 }
@@ -330,6 +338,6 @@ stock
 stock
 	_TDW_TEST__SKIP()
 {
-	TDW_g_sFunctionHaveAssertions = 0x80000000;
+	TDW_g_sFunctionHaveAssertions = TDW_TEST_FUNC_SKIPPED;
 	return 1;
 }

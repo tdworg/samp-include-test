@@ -1,6 +1,12 @@
 /** ======================================================================== **\
 	Debug
 
+| Description:
+The library contains some function for debugging code.
+
+| Version:
+1.0.0
+
 | License:
 Copyright (c) 2016 Double V
 

@@ -1,4 +1,6 @@
 /** ======================================================================== **\
+	Debug
+
 | License:
 Copyright (c) 2016 Double V
 
@@ -32,8 +34,6 @@ freely, subject to the following restrictions:
 #if !defined _DEBUG
 	#define _DEBUG (0)
 #endif
-
-
 
 #define p:%1(%2)%0\10; debug_print@%1(%2)%0$
 

@@ -1,4 +1,13 @@
 /** ======================================================================== **\
+	Benchmark
+
+| Description:
+Allows for the possibility to compare the performance of different
+algorithms (functions).
+
+| Version:
+1.0.0
+
 | License:
 Copyright (c) 2016 Double V
 

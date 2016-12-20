@@ -5,6 +5,13 @@
 Allows for the possibility to compare the performance of different
 algorithms (functions).
 
+Example:
+	benchmark SomeFunction[1000](local)
+	{
+		local = 5;
+		printf("%d", local);
+	}
+
 | Version:
 1.0.0
 

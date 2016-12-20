@@ -29,6 +29,8 @@ freely, subject to the following restrictions:
 
 #define _TDW_BENCHMARK
 
+forward OnBenchPerformed(function_name[], result_time);
+
 #if !defined TDW_MAX_DEFAULT_ITERATIONS
 	#define TDW_MAX_DEFAULT_ITERATIONS (10000)
 #endif
@@ -55,7 +57,9 @@ static stock
 	TDW_g_sOffset@Dat,
 	TDW_g_sOffset@PFT,
 	TDW_g_sOffset@NFT,
-	TDW_g_sNumberOfPublics;
+	TDW_g_sNumberOfPublics,
+	TDW_g_sOnBenchPerformed[] = !"OnBenchPerformed",
+	TDW_g_sCallbacks;
 
 // -----------------------------------------------------------------------------
 // Internal
@@ -124,6 +128,61 @@ stock
 		0;
 }
 
+
+#if defined FILTERSCRIPT
+	public
+		OnFilterScriptInit()
+	{
+		if (funcidx(TDW_g_sOnBenchPerformed) != -1) {
+			TDW_g_sCallbacks |= 1;
+		}
+		return
+		#if defined TDWBM@OnFilterScriptInit
+			TDWBM@OnFilterScriptInit();
+		#else
+			1;
+		#endif
+	}
+
+	#if defined _ALS_OnFilterScriptInit
+		#undef OnFilterScriptInit
+	#else
+		#define _ALS_OnFilterScriptInit
+	#endif
+
+	#define OnFilterScriptInit TDWBM@OnFilterScriptInit
+
+	#if defined TDWBM@OnFilterScriptInit
+		forward TDWBM@OnFilterScriptInit();
+	#endif
+#else
+	public
+		OnGameModeInit()
+	{
+		if (funcidx(TDW_g_sOnBenchPerformed) != -1) {
+			TDW_g_sCallbacks |= 1;
+		}
+		return
+		#if defined TDWBM@OnGameModeInit
+			TDWBM@OnGameModeInit();
+		#else
+			1;
+		#endif
+	}
+
+	#if defined _ALS_OnGameModeInit
+		#undef OnGameModeInit
+	#else
+		#define _ALS_OnGameModeInit
+	#endif
+
+	#define OnGameModeInit TDWBM@OnGameModeInit
+
+	#if defined TDWBM@OnGameModeInit
+		forward TDWBM@OnGameModeInit();
+	#endif
+#endif
+
 // -----------------------------------------------------------------------------
 // Functions
 // -----------------------------------------------------------------------------
@@ -187,6 +246,12 @@ stock
 			time@result = GetTickCount() - time@start;
 
 			p:0(message, function_name, time@result);
+
+			if (TDW_g_sCallbacks & 1) {
+				CallLocalFunction(TDW_g_sOnBenchPerformed, !"si",
+					function_name, time@result
+				);
+			}
 		}
 		++idx;
 	}

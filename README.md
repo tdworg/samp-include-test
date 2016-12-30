@@ -17,6 +17,8 @@ A collection of libraries for testing, debugging and benchmarking scripts.
 
 main()
 {
+	p:0("Debug level is zero"), p:1("Debug level is greater than zero");
+
 	p:0("Debug level is zero");
 	p:1("Debug level is greater than zero");
 }

@@ -69,7 +69,7 @@ forward OnBenchPerformed(function_name[], result_time);
 #define bm@l:%1,; %1;
 
 #define sbenchmark:%1(%3) \
-	for(new %1@nonei=1,%1@nonet,%1@nonett,%1@iterMi=0,%1@iterMj=_:C:0,%3;%1@nonei--!=0;printf(#%1": %d [%dx%d]",%1@nonett,\
+	for(new %1@nonei=1,%1@nonet,%1@nonett,%1@iterMi=0,%1@iterMj=_:C:0,%3;%1@nonei--!=0;printf(#%1": %dms [%dx%d]",%1@nonett,\
 		_BENCHMARK_TIMER_MAJOR,_BENCHMARK_TIMER_MINOR))\
 		for(%1@iterMj=0;%1@iterMj<(_BENCHMARK_TIMER_MAJOR);%1@nonett+=GetTickCount()-%1@nonet,++%1@iterMj)\
 			for(%1@iterMi=0,%1@nonet=GetTickCount();%1@iterMi<(_BENCHMARK_TIMER_MINOR);++%1@iterMi)

@@ -37,6 +37,11 @@ freely, subject to the following restrictions:
 
 #define _TDW_DEBUG
 
+#if !defined TDW_DEBUG_T
+	#define TDW_DEBUG_T ""
+	#define TDW_DEBUG_NO_TAG
+#endif
+
 #if !defined _DEBUG
 	#define _DEBUG (0)
 #endif
@@ -71,6 +76,12 @@ freely, subject to the following restrictions:
 	#define debug_print@5(%2)%0$
 #endif
 
-#define debug_print@e(%2)%0$ printf("\a[TDW][    Error    ]: "%2)%0
-#define debug_print@w(%2)%0$ printf("[TDW][   Warning   ]: "%2)%0
-#define debug_print@i(%2)%0$ printf("[TDW][ Information ]: "%2)%0
+#if defined TDW_DEBUG_NO_TAG
+	#define debug_print@e(%2)%0$ printf("\a[    Error    ]: "%2)%0
+	#define debug_print@w(%2)%0$ printf("[   Warning   ]: "%2)%0
+	#define debug_print@i(%2)%0$ printf("[ Information ]: "%2)%0
+#else
+	#define debug_print@e(%2)%0$ printf("\a["TDW_DEBUG_T"][    Error    ]: "%2)%0
+	#define debug_print@w(%2)%0$ printf("["TDW_DEBUG_T"][   Warning   ]: "%2)%0
+	#define debug_print@i(%2)%0$ printf("["TDW_DEBUG_T"][ Information ]: "%2)%0
+#endif

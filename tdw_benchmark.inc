@@ -45,6 +45,9 @@ freely, subject to the following restrictions:
 
 #define _TDW_BENCHMARK
 
+const _BENCHMARK_TIMER_MAJOR=10_000;
+const _BENCHMARK_TIMER_MINOR=1_000;
+
 forward OnBenchPerformed(function_name[], result_time);
 
 #if !defined TDW_MAX_DEFAULT_ITERATIONS
@@ -64,6 +67,13 @@ forward OnBenchPerformed(function_name[], result_time);
 #define bmf@%0\32;%1(%2) bmf@%0%1(%2)
 
 #define bm@l:%1,; %1;
+
+#define sbenchmark:%1(%3) \
+	for(new %1@nonei=1,%1@nonet,%1@nonett,%1@iterMi=0,%1@iterMj=_:C:0,%3;%1@nonei--!=0;printf(#%1": %d [%dx%d]",%1@nonett,\
+		_BENCHMARK_TIMER_MAJOR,_BENCHMARK_TIMER_MINOR))\
+		for(%1@iterMj=0;%1@iterMj<(_BENCHMARK_TIMER_MAJOR);%1@nonett+=GetTickCount()-%1@nonet,++%1@iterMj)\
+			for(%1@iterMi=0,%1@nonet=GetTickCount();%1@iterMi<(_BENCHMARK_TIMER_MINOR);++%1@iterMi)
+#define C:%1,; %1;
 
 // -----------------------------------------------------------------------------
 // Vars

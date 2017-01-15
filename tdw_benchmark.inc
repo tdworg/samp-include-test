@@ -85,7 +85,8 @@ static stock
 	TDW_g_sOffset@NFT,
 	TDW_g_sNumberOfPublics,
 	TDW_g_sOnBenchPerformed[] = !"OnBenchPerformed",
-	TDW_g_sCallbacks;
+	TDW_g_sCallbacks,
+	TDW_g_sJITStatus[2][] = {"not interpreted", "JIT-interpreted"};
 
 // -----------------------------------------------------------------------------
 // Internal
@@ -159,6 +160,11 @@ stock
 	public
 		OnFilterScriptInit()
 	{
+		new is_jit;
+		#emit lctrl 7
+		#emit stor.s.pri is_jit
+		printf("Status: %s", TDW_g_sJITStatus[is_jit]);
+
 		if (funcidx(TDW_g_sOnBenchPerformed) != -1) {
 			TDW_g_sCallbacks |= 1;
 		}
@@ -185,6 +191,11 @@ stock
 	public
 		OnGameModeInit()
 	{
+		new is_jit;
+		#emit lctrl 7
+		#emit stor.s.pri is_jit
+		printf("Status: %s", TDW_g_sJITStatus[is_jit]);
+
 		if (funcidx(TDW_g_sOnBenchPerformed) != -1) {
 			TDW_g_sCallbacks |= 1;
 		}

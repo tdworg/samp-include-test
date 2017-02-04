@@ -13,7 +13,7 @@ Example:
 	}
 
 | Version:
-1.1.0
+1.1.1
 
 | License:
 Copyright (c) 2016 Double V
